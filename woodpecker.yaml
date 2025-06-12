@@ -18,7 +18,7 @@ steps:
       - echo "$ENVI" | sudo tee .env > /dev/null
       - pnpm install --no-frozen-lockfile
       - pnpm build
-      - ls
+      - ls -a
   - name: Deploy FE
     image: bash # Using the official bash Docker image
     environment:
@@ -40,7 +40,7 @@ steps:
       # Create target directory
       - sudo ssh -i $WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "sudo mkdir -p $REMOTE_TARGET_PATH/Bean-Journal-unami"
       # Copy files using rsync (better than scp for directories)
-      - sudo scp -i -C $WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no -r ./* $REMOTE_USER@$REMOTE_HOST:$REMOTE_TARGET_PATH/Bean-Journal-unami/
+      - sudo scp -i $WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no -r ./.next/* $REMOTE_USER@$REMOTE_HOST:$REMOTE_TARGET_PATH/Bean-Journal-unami/.next/
       # Deploy with PM2
       - |
         sudo ssh -i $WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
