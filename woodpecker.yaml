@@ -28,7 +28,6 @@ steps:
       REMOTE_HOST: 192.168.2.245
       REMOTE_USER: root
       REMOTE_TARGET_PATH: /root # e.g., /var/www/myapp
-      DEPLOY_COMMAND: "cd /root/Bean-Journal-unami && npm install -g pm2 && pm2 delete BJ_Un || true && pm2 start serve --name BJ_Un -- -s ./Bean-Journal-unami/dist/ -l 3002" # Your actual deploy command
     commands:
       - sudo apt-get update -y && sudo apt-get install -y openssh-client rsync
       
@@ -40,12 +39,12 @@ steps:
       # Create target directory
       - sudo ssh -i $WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "sudo mkdir -p $REMOTE_TARGET_PATH/Bean-Journal-unami"
       # Copy files using rsync (better than scp for directories)
-      - sudo scp -i $WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no -r ./.next/* $REMOTE_USER@$REMOTE_HOST:$REMOTE_TARGET_PATH/Bean-Journal-unami/
+      - sudo scp -i "$WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy" -o StrictHostKeyChecking=no -r ./.next/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_TARGET_PATH/Bean-Journal-unami/"
       # Deploy with PM2
       - |
         sudo ssh -i $WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
           cd $REMOTE_TARGET_PATH/Bean-Journal-unami &&
           pm2 delete BJ_Un || true &&
-          pm2 start serve --name BJ_Un -- -s ./ -l 3002 &&
+          pm2 start serve --name BJ_Un -- -s ./.next/ -l 3002 &&
           pm2 save
         "
