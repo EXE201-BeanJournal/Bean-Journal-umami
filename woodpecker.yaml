@@ -46,12 +46,14 @@ steps:
       - sudo rsync -avWL -e "ssh -i $WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no" ./public/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_TARGET_PATH/Bean-Journal-unami/public/"
       - sudo rsync -avWL -e "ssh -i $WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no" ./.env "$REMOTE_USER@$REMOTE_HOST:$REMOTE_TARGET_PATH/Bean-Journal-unami/"
       - sudo rsync -avWL -e "ssh -i $WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no" ./prisma/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_TARGET_PATH/Bean-Journal-unami/prisma/"
+      - sudo rsync -avWL -e "ssh -i $WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no" ./geo/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_TARGET_PATH/Bean-Journal-unami/geo/"
       # Deploy with PM2
       - |
         sudo ssh -i $WOODPECKER_WORKSPACE/.ssh/id_rsa_deploy -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
           cd $REMOTE_TARGET_PATH/Bean-Journal-unami &&
           pnpm install --no-frozen-lockfile &&
           pnpm exec prisma generate &&
+          pnpm prisma migrate deploy &&
           pm2 delete BJ_Un || true &&
           pm2 start pnpm --name BJ_Un -- start -p 3003 &&
           pm2 save
