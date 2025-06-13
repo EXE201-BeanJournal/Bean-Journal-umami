@@ -17,6 +17,7 @@ steps:
       - corepack enable pnpm
       - echo "$ENVI" | sudo tee .env > /dev/null
       - pnpm install --no-frozen-lockfile
+      - pnpm add styled-jsx
       - pnpm build
       - ls -a
   - name: Deploy FE
